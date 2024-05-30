@@ -1,0 +1,240 @@
+body {
+    background-color: #0d1b2a;
+    color: #ffffff;
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    height: 100vh;
+    margin: 0;
+    overflow-y: auto;
+}
+
+#game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 1200px;
+    margin: 20px;
+}
+
+#main-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+#game-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+#info-box {
+    background-color: #1b263b;
+    border: 2px solid #415a77;
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+    width: 100%;
+    max-width: 600px;
+}
+
+#info-box h1 {
+    margin: 0 0 10px 0;
+}
+
+#info-box p {
+    margin: 5px 0;
+}
+
+#current-task {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+#turn-indicators {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 10px;
+}
+
+.indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 40px;
+    height: 40px;
+}
+
+.outline-circle {
+    border: 2px solid;
+    border-radius: 50%;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    background-color: transparent;
+}
+
+.solid-circle {
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    z-index: 1;
+    background-color: transparent;
+}
+
+#indicator-iris .outline-circle {
+    border-color: #ff4c4c;
+}
+
+#indicator-iris .solid-circle {
+    background-color: #ff4c4c;
+}
+
+#indicator-miles .outline-circle {
+    border-color: #4caf50;
+}
+
+#indicator-miles .solid-circle {
+    background-color: #4caf50;
+}
+
+#indicator-seth .outline-circle {
+    border-color: #2196f3;
+}
+
+#indicator-seth .solid-circle {
+    background-color: #2196f3;
+}
+
+#game-board {
+    display: grid;
+    grid-template-columns: repeat(10, 40px);
+    gap: 2px;
+}
+
+.square {
+    width: 40px;
+    height: 40px;
+    border: 1px solid #415a77;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.square.black {
+    background-color: #0d1b2a;
+}
+
+.square.white {
+    background-color: #415a77;
+}
+
+.square.red {
+    background-color: #ff4c4c;
+}
+
+.square.green {
+    background-color: #4caf50;
+}
+
+.square.blue {
+    background-color: #2196f3;
+}
+
+.outline {
+    border: 3px solid;
+}
+
+.outline-miles {
+    border-color: #4caf50;
+}
+
+.outline-seth {
+    border-color: #2196f3;
+}
+
+.outline-iris {
+    border-color: #ff4c4c;
+}
+
+#current-player {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+#score-box {
+    background-color: #1b263b;
+    border: 2px solid #415a77;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    width: 200px;
+    margin-top: 20px;
+}
+
+#score-box p {
+    margin: 5px 0;
+}
+
+#breakdown-box {
+    margin-top: 20px;
+    background-color: #1b263b;
+    border: 2px solid #415a77;
+    border-radius: 10px;
+    padding: 20px;
+    width: 200px;
+    text-align: center;
+}
+
+#rules-lore {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin-top: 20px;
+}
+
+#rules,
+#lore {
+    background-color: #1b263b;
+    border: 2px solid #415a77;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 10px;
+    width: 100%;
+    max-width: 600px;
+}
+
+#rules h2,
+#lore h2 {
+    margin-top: 0;
+}
+
+#rules p,
+#lore p {
+    margin: 10px 0;
+}
+
+#rules ul {
+    padding-left: 20px;
+}
+
+#rules li {
+    margin-bottom: 5px;
+}
+
+@media screen and (max-width: 768px) {
+    #rules,
+    #lore {
+        width: 90%;
+    }
+}
