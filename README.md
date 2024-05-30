@@ -30,7 +30,7 @@ Turn Sequence
 Winning
 
     The game ends when all squares on the board are occupied.
-    The player with the most squares under their control (colored in their respective player color) wins the game.
+    The player with the highest score wins the game.
 
 Development
 Technologies Used
