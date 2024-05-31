@@ -94,9 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Validate move function
     function isValidMove(player, row, col, isGuess = false) {
         if (board[row][col].occupiedBy && board[row][col].occupiedBy !== player && board[row][col].occupiedBy !== 'deleted') {
-            var test1 = player.pieces.some(p => Math.abs(p.row - row) + Math.abs(p.col - col));
-            var test2 = player.pieces.some(p => Math.abs(p.row - row) + Math.abs(p.col - col));
-            return (player.pieces.some((p => Math.abs(p.row - row) + Math.abs(p.col - col) === 1)) || player.pieces.some(p => Math.abs(p.row - row) + Math.abs(p.col - col) === 0));
+            return (player.pieces.some(p => Math.abs(p.row - row) + Math.abs(p.col - col) === 1));
         }
         if (board[row][col].occupiedBy && board[row][col].occupiedBy === 'deleted'){
             return false;
@@ -105,7 +103,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isGuess) {
             const targetPlayer = players[(currentPlayerIndex + turnStep + 1) % players.length];
             if (targetPlayer.pieces.length === 0) return true;
-            var test = targetPlayer.pieces.some(p => Math.abs(p.row - row) + Math.abs(p.col - col) === 1);
             return targetPlayer.pieces.some(p => Math.abs(p.row - row) + Math.abs(p.col - col) === 1);
         }
         return player.pieces.some(p => Math.abs(p.row - row) + Math.abs(p.col - col) === 1);
@@ -120,9 +117,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Finalize turn function
     function finalizeTurn() {
-        // Delete one random square from the board
-        //deleteRandomSquare();
-
         currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
         if (currentPlayerIndex === 0) {
             processRoundResults();
@@ -131,9 +125,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         turnStep = 0;
         updateDisplay();
-        /*if (players[currentPlayerIndex].isAI) {
+        if (players[currentPlayerIndex].isAI) {
             setTimeout(() => aiMakeMove(players[currentPlayerIndex]), 1000);
-        }*/
+        }
     }
 
     // Process round results function
@@ -214,7 +208,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const randomIndex = Math.floor(Math.random() * emptySquares.length);
             const square = emptySquares[randomIndex];
             square.element.className = `square deleted`;
-           // square.element.classList.add('deleted');
             square.occupiedBy = 'deleted';
         }
     }
