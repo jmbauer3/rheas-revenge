@@ -87,11 +87,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Validate move function
     function isValidMove(player, row, col, isGuess = false) {
-        if (board[row][col].occupiedBy && board[row][col].occupiedBy !== player && board[row][col].occupiedBy !== 'deleted') {
+        if (board[row][col].occupiedBy && board[row][col].occupiedBy !== player) {
             return player.pieces.some(p => Math.abs(p.row - row) + Math.abs(p.col - col) === 1);
-        }
-        if (board[row][col].occupiedBy && board[row][col].occupiedBy === 'deleted') {
-            return false;
         }
         if (player.pieces.length === 0) return true;
         if (isGuess) {
@@ -111,6 +108,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Finalize turn function
     function finalizeTurn() {
+        // Delete one random square from the board
+        //deleteRandomSquare();
+
         currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
         if (currentPlayerIndex === 0) {
             processRoundResults();
@@ -126,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Process round results function
     function processRoundResults() {
-        const results = document.getElementById('round-results');
+        const results = document.getElementById('prediction-results');
         results.innerHTML = '';
         players.forEach(player => {
             player.guesses.forEach((guess, index) => {
@@ -163,6 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // AI make move function
     function aiMakeMove(player) {
         while (player.guesses.length < 2) {
+            const targetPlayer = players[(currentPlayerIndex + player.guesses.length + 1) % players.length];
             const guess = getValidRandomMove(player, true);
             player.guesses.push(guess);
             board[guess.row][guess.col].element.classList.add(`outline-${player.color}`);
@@ -201,6 +202,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const randomIndex = Math.floor(Math.random() * emptySquares.length);
             const square = emptySquares[randomIndex];
             square.element.className = `square deleted`;
+           // square.element.classList.add('deleted');
             square.occupiedBy = 'deleted';
         }
     }
