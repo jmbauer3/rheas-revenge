@@ -161,8 +161,28 @@ body {
     background-color: #0d1b2a;
 }
 
+square.black.deleted {
+    background-color: #000000;
+    border: none;
+}
+
+square.black.obstacle {
+    background-color: #FFFFFF;
+    border: none;
+}
+
 .square.white {
     background-color: #415a77;
+}
+
+square.white.deleted {
+    background-color: #000000;
+    border: none;
+}
+
+square.white.obstacle {
+    background-color: #FFFFFF;
+    border: none;
 }
 
 .square.red {
@@ -179,16 +199,6 @@ body {
 
 .transparent {
     opacity: 0.5;
-}
-
-.deleted {
-    background-color: #000000;
-    border: none;
-}
-
-.obstacle {
-    background-color: #FFFFFF;
-    border: none;
 }
 
 .outline-red {
