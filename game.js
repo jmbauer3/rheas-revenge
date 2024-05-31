@@ -74,6 +74,9 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             updateDisplay();
         }
+        if (players[currentPlayerIndex].isAI) {
+            setTimeout(() => aiMakeMove(players[currentPlayerIndex]), 1000);
+        }
     }
 
     // Place a piece function
@@ -83,17 +86,26 @@ document.addEventListener('DOMContentLoaded', () => {
         player.pieces.push({ row, col });
         board[row][col].element.className = `square ${player.color} transparent`;
         finalizeTurn();
+        if (players[currentPlayerIndex].isAI) {
+            setTimeout(() => aiMakeMove(players[currentPlayerIndex]), 1000);
+        }
     }
 
     // Validate move function
     function isValidMove(player, row, col, isGuess = false) {
-        if (board[row][col].occupiedBy && board[row][col].occupiedBy !== player) {
-            return player.pieces.some(p => Math.abs(p.row - row) + Math.abs(p.col - col) === 1);
+        if (board[row][col].occupiedBy && board[row][col].occupiedBy !== player && board[row][col].occupiedBy !== 'deleted') {
+            var test1 = player.pieces.some(p => Math.abs(p.row - row) + Math.abs(p.col - col));
+            var test2 = player.pieces.some(p => Math.abs(p.row - row) + Math.abs(p.col - col));
+            return (player.pieces.some((p => Math.abs(p.row - row) + Math.abs(p.col - col) === 1)) || player.pieces.some(p => Math.abs(p.row - row) + Math.abs(p.col - col) === 0));
+        }
+        if (board[row][col].occupiedBy && board[row][col].occupiedBy === 'deleted'){
+            return false;
         }
         if (player.pieces.length === 0) return true;
         if (isGuess) {
             const targetPlayer = players[(currentPlayerIndex + turnStep + 1) % players.length];
             if (targetPlayer.pieces.length === 0) return true;
+            var test = targetPlayer.pieces.some(p => Math.abs(p.row - row) + Math.abs(p.col - col) === 1);
             return targetPlayer.pieces.some(p => Math.abs(p.row - row) + Math.abs(p.col - col) === 1);
         }
         return player.pieces.some(p => Math.abs(p.row - row) + Math.abs(p.col - col) === 1);
@@ -119,9 +131,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         turnStep = 0;
         updateDisplay();
-        if (players[currentPlayerIndex].isAI) {
+        /*if (players[currentPlayerIndex].isAI) {
             setTimeout(() => aiMakeMove(players[currentPlayerIndex]), 1000);
-        }
+        }*/
     }
 
     // Process round results function
