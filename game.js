@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         board.push(rowArray);
     }
-
+    
     // Update display function
     function updateDisplay() {
         const player = players[currentPlayerIndex];
@@ -32,6 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('green-score').textContent = `Miles: ${players[1].score}`;
         document.getElementById('blue-score').textContent = `Seth: ${players[2].score}`;
     }
+
 
     // Get current task description function
     function getCurrentTaskDescription() {
@@ -79,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Place a piece function
     function placePiece(player, row, col) {
         capturePiece(player, row, col);
-        board[row][col].occupiedBy = player;
+        //board[row][col].occupiedBy = player;
         player.pieces.push({ row, col });
         board[row][col].element.className = `square ${player.color} transparent`;
         finalizeTurn();
@@ -93,8 +94,19 @@ document.addEventListener('DOMContentLoaded', () => {
         if (player.pieces.length === 0) return true;
         if (isGuess) {
             const targetPlayer = players[(currentPlayerIndex + turnStep + 1) % players.length];
-            if (targetPlayer.pieces.length === 0) return true;
-            return targetPlayer.pieces.some(p => Math.abs(p.row - row) + Math.abs(p.col - col) === 1);
+            
+            const boardPieces = [];
+            board.forEach(row => row.forEach(square => {
+                if (square.occupiedBy && square.occupiedBy.name === targetPlayer.name){
+                    boardPieces.push(square);
+                }
+            }));
+
+            if (boardPieces.length === 0) return true;
+            return boardPieces.some(p => Math.abs(p.row - row) + Math.abs(p.col - col) === 1);
+
+            //if (targetPlayer.pieces.length === 0) return true;
+            //return targetPlayer.pieces.some(p => Math.abs(p.row - row) + Math.abs(p.col - col) === 1);
         }
         return player.pieces.some(p => Math.abs(p.row - row) + Math.abs(p.col - col) === 1);
     }
@@ -113,6 +125,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
         if (currentPlayerIndex === 0) {
+            players.forEach(player => 
+                player.pieces.forEach(piece => {
+                board[piece.row][piece.col].occupiedBy = player;
+            }));
+
             processRoundResults();
             clearGuesses();
             deleteRandomSquare();
@@ -120,7 +137,8 @@ document.addEventListener('DOMContentLoaded', () => {
         turnStep = 0;
         updateDisplay();
         if (players[currentPlayerIndex].isAI) {
-            setTimeout(() => aiMakeMove(players[currentPlayerIndex]), 1000);
+            setTimeout(() => aiMakeMove(players[currentPlayerIndex]), 2000);
+            //aiMakeMove(players[currentPlayerIndex]);
         }
     }
 
@@ -162,19 +180,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // AI make move function
     function aiMakeMove(player) {
-        while (player.guesses.length < 2) {
+        //while (player.guesses.length < 2) {
             const targetPlayer = players[(currentPlayerIndex + player.guesses.length + 1) % players.length];
             const guess = getValidRandomMove(player, true);
             player.guesses.push(guess);
             board[guess.row][guess.col].element.classList.add(`outline-${player.color}`);
-        }
+        //}
+        turnStep++;
+        updateDisplay();
+
+        const targetPlayer2 = players[(currentPlayerIndex + player.guesses.length + 1) % players.length];
+        const guess2 = getValidRandomMove(player, true);
+        player.guesses.push(guess2);
+        board[guess2.row][guess2.col].element.classList.add(`outline-${player.color}`);
+
+        turnStep++;
+        updateDisplay();
 
         const move = getValidRandomMove(player);
         capturePiece(player, move.row, move.col);
         board[move.row][move.col].occupiedBy = player;
         player.pieces.push(move);
         board[move.row][move.col].element.className = `square ${player.color} transparent`;
-        finalizeTurn();
+        //finalizeTurn();
+        setTimeout(() => finalizeTurn(), 2000);
+
     }
 
     // Get valid random move function
@@ -192,7 +222,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let emptySquares = [];
         board.forEach(row => {
             row.forEach(square => {
-                if (!square.occupiedBy && square.occupiedBy !== 'deleted') {
+                if (square.occupiedBy !== 'deleted') {
                     emptySquares.push(square);
                 }
             });
