@@ -74,9 +74,6 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             updateDisplay();
         }
-        if (players[currentPlayerIndex].isAI) {
-            setTimeout(() => aiMakeMove(players[currentPlayerIndex]), 1000);
-        }
     }
 
     // Place a piece function
@@ -86,17 +83,14 @@ document.addEventListener('DOMContentLoaded', () => {
         player.pieces.push({ row, col });
         board[row][col].element.className = `square ${player.color} transparent`;
         finalizeTurn();
-        if (players[currentPlayerIndex].isAI) {
-            setTimeout(() => aiMakeMove(players[currentPlayerIndex]), 1000);
-        }
     }
 
     // Validate move function
     function isValidMove(player, row, col, isGuess = false) {
         if (board[row][col].occupiedBy && board[row][col].occupiedBy !== player && board[row][col].occupiedBy !== 'deleted') {
-            return (player.pieces.some(p => Math.abs(p.row - row) + Math.abs(p.col - col) === 1));
+            return player.pieces.some(p => Math.abs(p.row - row) + Math.abs(p.col - col) === 1);
         }
-        if (board[row][col].occupiedBy && board[row][col].occupiedBy === 'deleted'){
+        if (board[row][col].occupiedBy && board[row][col].occupiedBy === 'deleted') {
             return false;
         }
         if (player.pieces.length === 0) return true;
@@ -132,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Process round results function
     function processRoundResults() {
-        const results = document.getElementById('prediction-results');
+        const results = document.getElementById('round-results');
         results.innerHTML = '';
         players.forEach(player => {
             player.guesses.forEach((guess, index) => {
@@ -169,7 +163,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // AI make move function
     function aiMakeMove(player) {
         while (player.guesses.length < 2) {
-            const targetPlayer = players[(currentPlayerIndex + player.guesses.length + 1) % players.length];
             const guess = getValidRandomMove(player, true);
             player.guesses.push(guess);
             board[guess.row][guess.col].element.classList.add(`outline-${player.color}`);
