@@ -181,6 +181,16 @@ body {
     opacity: 0.5;
 }
 
+.deleted {
+    background-color: #000000;
+    border: none;
+}
+
+.obstacle {
+    background-color: #FFFFFF;
+    border: none;
+}
+
 .outline-red {
     border: 2px solid red;
 }
