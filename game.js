@@ -115,6 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentPlayerIndex === 0) {
             processRoundResults();
             clearGuesses();
+            deleteRandomSquare();
         }
         turnStep = 0;
         updateDisplay();
