@@ -109,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Finalize turn function
     function finalizeTurn() {
         // Delete one random square from the board
-        deleteRandomSquare();
+        //deleteRandomSquare();
 
         currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
         if (currentPlayerIndex === 0) {
