@@ -201,7 +201,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (emptySquares.length > 0) {
             const randomIndex = Math.floor(Math.random() * emptySquares.length);
             const square = emptySquares[randomIndex];
-            square.element.classList.add('deleted');
+            square.element.className = `square deleted`;
+           // square.element.classList.add('deleted');
             square.occupiedBy = 'deleted';
         }
     }
