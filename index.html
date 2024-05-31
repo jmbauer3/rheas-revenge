@@ -5,64 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rhea's Revenge</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Additional inline styles or adjustments can go here */
+    </style>
 </head>
 <body>
     <div id="game-container">
-        <div id="main-content">
-            <div id="game-info">
-                <div id="info-box">
-                    <h1>Rhea's Revenge</h1>
-                    <p id="current-player">Current Player: Iris</p>
-                    <p id="current-task">First guess: Guess where Miles (Green) will place a piece.</p>
-                    <div id="turn-indicators">
-                        <div id="indicator-iris" class="indicator">
-                            <div class="outline-circle"></div>
-                            <div class="outline-circle"></div>
-                            <div class="solid-circle"></div>
-                        </div>
-                        <div id="indicator-miles" class="indicator">
-                            <div class="outline-circle"></div>
-                            <div class="outline-circle"></div>
-                            <div class="solid-circle"></div>
-                        </div>
-                        <div id="indicator-seth" class="indicator">
-                            <div class="outline-circle"></div>
-                            <div class="outline-circle"></div>
-                            <div class="solid-circle"></div>
-                        </div>
-                    </div>
+        <div id="game-info">
+            <div id="info-box">
+                <h1>Board Game</h1>
+                <p id="current-player"></p>
+                <p id="current-task"></p>
+            </div>
+            <div id="turn-indicators">
+                <div id="indicator-iris" class="indicator">
+                    <div class="outline-circle-1"></div>
+                    <div class="outline-circle-2"></div>
+                    <div class="solid-circle"></div>
+                </div>
+                <div id="indicator-miles" class="indicator">
+                    <div class="outline-circle-1"></div>
+                    <div class="outline-circle-2"></div>
+                    <div class="solid-circle"></div>
+                </div>
+                <div id="indicator-seth" class="indicator">
+                    <div class="outline-circle-1"></div>
+                    <div class="outline-circle-2"></div>
+                    <div class="solid-circle"></div>
                 </div>
             </div>
-            <div id="game-board-container">
-                <div id="game-board"></div>
-            </div>
-            <div id="score-box">
+            <div id="scores">
                 <p id="red-score">Iris: 0</p>
                 <p id="green-score">Miles: 0</p>
                 <p id="blue-score">Seth: 0</p>
             </div>
-            <div id="breakdown-box">
-                <p>Prediction Results</p>
-            </div>
-            <div id="rules-lore">
-                <div id="rules">
-                    <h2>Game Rules</h2>
-                    <ul>
-                        <li>Each player takes turns guessing where other players will place their pieces.</li>
-                        <li>After two guesses, players place their own piece on the board.</li>
-                        <li>If two or more players place their pieces in the same spot, no one claims it.</li>
-                        <li>At the end of each round, all pieces and guesses are revealed and scores are tallied.</li>
-                        <li>Guesses are shown as outlines around squares in the player's color.</li>
-                        <li>Placed pieces remain on the board until the end of the game.</li>
-                        <li>Players can capture each other's squares by placing their piece on an occupied square.</li>
-                        <li>The game continues until there are no more free squares.</li>
-                    </ul>
-                </div>
-                <div id="lore">
-                    <h2>The Lore of Rhea</h2>
-                    <p>Rhea, the Titaness of fertility and motherhood, watches over the land of mortals...</p>
-                </div>
-            </div>
+            <div id="prediction-results"></div>
+        </div>
+        <div id="game-board">
+            <!-- Game board squares will be dynamically created by JavaScript -->
         </div>
     </div>
     <script src="game.js"></script>

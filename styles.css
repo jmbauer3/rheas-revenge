@@ -19,13 +19,6 @@ body {
     margin: 20px;
 }
 
-#main-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-}
-
 #game-info {
     display: flex;
     flex-direction: column;
@@ -61,6 +54,7 @@ body {
     display: flex;
     justify-content: space-around;
     margin-top: 10px;
+    width: 100%;
 }
 
 .indicator {
@@ -72,14 +66,15 @@ body {
     height: 40px;
 }
 
-.outline-circle {
+.outline-circle-1, .outline-circle-2 {
     border: 2px solid;
     border-radius: 50%;
     position: absolute;
-    width: 100%;
-    height: 100%;
+    width: 30px;
+    height: 30px;
     box-sizing: border-box;
     background-color: transparent;
+    display: none; /* Ensure indicators start hidden */
 }
 
 .solid-circle {
@@ -88,9 +83,11 @@ body {
     height: 20px;
     z-index: 1;
     background-color: transparent;
+    display: none; /* Ensure indicators start hidden */
 }
 
-#indicator-iris .outline-circle {
+/* Adjust indicators for each player */
+#indicator-iris .outline-circle-1, #indicator-iris .outline-circle-2 {
     border-color: #ff4c4c;
 }
 
@@ -98,7 +95,7 @@ body {
     background-color: #ff4c4c;
 }
 
-#indicator-miles .outline-circle {
+#indicator-miles .outline-circle-1, #indicator-miles .outline-circle-2 {
     border-color: #4caf50;
 }
 
@@ -106,7 +103,7 @@ body {
     background-color: #4caf50;
 }
 
-#indicator-seth .outline-circle {
+#indicator-seth .outline-circle-1, #indicator-seth .outline-circle-2 {
     border-color: #2196f3;
 }
 
@@ -114,10 +111,40 @@ body {
     background-color: #2196f3;
 }
 
+#scores {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+#red-score, #green-score, #blue-score {
+    margin: 0;
+}
+
+#prediction-results {
+    background-color: #1b263b;
+    border: 2px solid #415a77;
+    border-radius: 10px;
+    padding: 10px;
+    margin-top: 20px;
+    width: 100%;
+    max-width: 600px;
+    text-align: center;
+    display: none; /* Initially hidden, shown at end of round */
+    overflow-y: auto;
+}
+
+#prediction-results div {
+    margin-bottom: 5px;
+}
+
 #game-board {
     display: grid;
     grid-template-columns: repeat(10, 40px);
     gap: 2px;
+    width: 100%;
+    max-width: 420px; /* Adjust width to fit game board size */
 }
 
 .square {
@@ -150,20 +177,20 @@ body {
     background-color: #2196f3;
 }
 
-.outline {
-    border: 3px solid;
+.transparent {
+    opacity: 0.5;
 }
 
-.outline-miles {
-    border-color: #4caf50;
+.outline-red {
+    border: 2px solid red;
 }
 
-.outline-seth {
-    border-color: #2196f3;
+.outline-green {
+    border: 2px solid green;
 }
 
-.outline-iris {
-    border-color: #ff4c4c;
+.outline-blue {
+    border: 2px solid blue;
 }
 
 #current-player {
@@ -171,70 +198,8 @@ body {
     margin-bottom: 10px;
 }
 
-#score-box {
-    background-color: #1b263b;
-    border: 2px solid #415a77;
-    border-radius: 10px;
-    padding: 20px;
-    text-align: center;
-    width: 200px;
-    margin-top: 20px;
-}
-
-#score-box p {
-    margin: 5px 0;
-}
-
-#breakdown-box {
-    margin-top: 20px;
-    background-color: #1b263b;
-    border: 2px solid #415a77;
-    border-radius: 10px;
-    padding: 20px;
-    width: 200px;
-    text-align: center;
-}
-
-#rules-lore {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    margin-top: 20px;
-}
-
-#rules,
-#lore {
-    background-color: #1b263b;
-    border: 2px solid #415a77;
-    border-radius: 10px;
-    padding: 10px;
-    margin: 10px;
-    width: 100%;
-    max-width: 600px;
-}
-
-#rules h2,
-#lore h2 {
-    margin-top: 0;
-}
-
-#rules p,
-#lore p {
-    margin: 10px 0;
-}
-
-#rules ul {
-    padding-left: 20px;
-}
-
-#rules li {
-    margin-bottom: 5px;
-}
-
 @media screen and (max-width: 768px) {
-    #rules,
-    #lore {
-        width: 90%;
+    #game-container {
+        padding: 10px;
     }
 }

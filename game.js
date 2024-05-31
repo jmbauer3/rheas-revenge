@@ -1,13 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
     const boardSize = 10;
     const players = [
-        { name: 'Iris', color: 'red', score: 0 },
-        { name: 'Miles', color: 'green', score: 0, isAI: true },
-        { name: 'Seth', color: 'blue', score: 0, isAI: true }
+        { name: 'Iris', color: 'red', score: 0, isAI: false, pieces: [], guesses: [] },
+        { name: 'Miles', color: 'green', score: 0, isAI: true, pieces: [], guesses: [] },
+        { name: 'Seth', color: 'blue', score: 0, isAI: true, pieces: [], guesses: [] }
     ];
     let currentPlayerIndex = 0;
-    let turnStep = 0;
-    let currentRound = [];
+    let turnStep = 0; // 0: Guess for Player 1, 1: Guess for Player 2, 2: Place Piece
     const board = [];
 
     // Create the game board
@@ -19,171 +18,197 @@ document.addEventListener('DOMContentLoaded', () => {
             square.classList.add('square', (row + col) % 2 === 0 ? 'black' : 'white');
             square.addEventListener('click', () => handleSquareClick(row, col));
             gameBoard.appendChild(square);
-            rowArray.push({ element: square });
+            rowArray.push({ element: square, row, col, occupiedBy: null });
         }
         board.push(rowArray);
     }
 
-    // Update current player display
-    function updateCurrentPlayerDisplay() {
-        document.getElementById('current-player').textContent = `Current Player: ${players[currentPlayerIndex].name}`;
-    }
-
-    // Update current task display
-    function updateCurrentTaskDisplay() {
-        let taskText = '';
-        if (turnStep === 0) {
-            taskText = `First guess: Guess where ${players[(currentPlayerIndex + 1) % 3].name} (${players[(currentPlayerIndex + 1) % 3].color}) will place a piece.`;
-        } else if (turnStep === 1) {
-            taskText = `Second guess: Guess where ${players[(currentPlayerIndex + 2) % 3].name} (${players[(currentPlayerIndex + 2) % 3].color}) will place a piece.`;
-        } else {
-            taskText = 'Place your own piece.';
-        }
-        document.getElementById('current-task').textContent = taskText;
-    }
-
-    // Update score display
-    function updateScoreDisplay() {
+    // Update display function
+    function updateDisplay() {
+        const player = players[currentPlayerIndex];
+        document.getElementById('current-player').textContent = `Current Player: ${player.name}`;
+        document.getElementById('current-task').textContent = getCurrentTaskDescription();
         document.getElementById('red-score').textContent = `Iris: ${players[0].score}`;
         document.getElementById('green-score').textContent = `Miles: ${players[1].score}`;
         document.getElementById('blue-score').textContent = `Seth: ${players[2].score}`;
     }
 
-    // Clear board highlights
-    function clearBoardHighlights() {
-        board.forEach(row => row.forEach(cell => {
-            cell.element.classList.remove('outline-red', 'outline-green', 'outline-blue');
-            cell.element.classList.remove('outline');
+    // Get current task description function
+    function getCurrentTaskDescription() {
+        const player = players[currentPlayerIndex];
+        if (turnStep === 0 || turnStep === 1) {
+            const targetPlayer = players[(currentPlayerIndex + turnStep + 1) % players.length];
+            return `${player.name}, guess where ${targetPlayer.name} (${targetPlayer.color}) will place a piece.`;
+        } else if (turnStep === 2) {
+            return `${player.name}, place your piece on the board.`;
+        }
+    }
+
+    // Handle square click function
+    function handleSquareClick(row, col) {
+        const player = players[currentPlayerIndex];
+        if (player.isAI) return;
+
+        if (turnStep === 0 || turnStep === 1) {
+            if (isValidGuess(player, row, col)) {
+                makeGuess(player, row, col);
+            } else {
+                alert("Invalid guess! Must guess adjacent to your own pieces or on an opponent's piece.");
+            }
+        } else if (turnStep === 2) {
+            if (isValidMove(player, row, col)) {
+                placePiece(player, row, col);
+            } else {
+                alert("Invalid move! Must place adjacent to an existing piece or on an opponent's piece.");
+            }
+        }
+    }
+
+    // Make a guess function
+    function makeGuess(player, row, col) {
+        player.guesses.push({ row, col });
+        board[row][col].element.classList.add(`outline-${player.color}`);
+        turnStep++;
+        if (turnStep === 3) {
+            finalizeTurn();
+        } else {
+            updateDisplay();
+        }
+    }
+
+    // Place a piece function
+    function placePiece(player, row, col) {
+        capturePiece(player, row, col);
+        board[row][col].occupiedBy = player;
+        player.pieces.push({ row, col });
+        board[row][col].element.className = `square ${player.color} transparent`;
+        finalizeTurn();
+    }
+
+    // Validate move function
+    function isValidMove(player, row, col, isGuess = false) {
+        if (board[row][col].occupiedBy && board[row][col].occupiedBy !== player) {
+            return player.pieces.some(p => Math.abs(p.row - row) + Math.abs(p.col - col) === 1);
+        }
+        if (player.pieces.length === 0) return true;
+        if (isGuess) {
+            const targetPlayer = players[(currentPlayerIndex + turnStep + 1) % players.length];
+            if (targetPlayer.pieces.length === 0) return true;
+            return targetPlayer.pieces.some(p => Math.abs(p.row - row) + Math.abs(p.col - col) === 1);
+        }
+        return player.pieces.some(p => Math.abs(p.row - row) + Math.abs(p.col - col) === 1);
+    }
+
+    // Capture opponent's piece function
+    function capturePiece(player, row, col) {
+        if (board[row][col].occupiedBy && board[row][col].occupiedBy !== player) {
+            board[row][col].occupiedBy.pieces = board[row][col].occupiedBy.pieces.filter(p => p.row !== row || p.col !== col);
+        }
+    }
+
+    // Finalize turn function
+    function finalizeTurn() {
+        // Delete one random square from the board
+        deleteRandomSquare();
+
+        currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+        if (currentPlayerIndex === 0) {
+            processRoundResults();
+            clearGuesses();
+        }
+        turnStep = 0;
+        updateDisplay();
+        if (players[currentPlayerIndex].isAI) {
+            setTimeout(() => aiMakeMove(players[currentPlayerIndex]), 1000);
+        }
+    }
+
+    // Process round results function
+    function processRoundResults() {
+        const results = document.getElementById('prediction-results');
+        results.innerHTML = '';
+        players.forEach(player => {
+            player.guesses.forEach((guess, index) => {
+                const targetPlayer = players[(players.indexOf(player) + index + 1) % players.length];
+                const move = board[guess.row][guess.col].occupiedBy;
+                const result = move && move !== player ? '✔️' : '❌';
+                const resultText = `${player.name} ➡ ${targetPlayer.name} ${result}`;
+                const resultElement = document.createElement('div');
+                resultElement.textContent = resultText;
+                results.appendChild(resultElement);
+                if (result === '✔️') player.score++;
+            });
+            if (!player.guesses.some(guess => board[guess.row][guess.col].occupiedBy === player)) {
+                player.score++;
+            }
+        });
+        board.forEach(row => row.forEach(square => {
+            if (square.occupiedBy) {
+                square.element.classList.remove('transparent');
+            }
         }));
     }
 
-    // Handle square click
-    function handleSquareClick(row, col) {
-        if (players[currentPlayerIndex].isAI) return; // Skip if AI's turn
-        if (turnStep < 2) {
-            currentRound.push({ type: 'guess', player: currentPlayerIndex, row, col, target: (currentPlayerIndex + turnStep + 1) % 3 });
-            turnStep++;
-            updateTurnIndicators();
-            updateCurrentTaskDisplay();
-        } else {
-            currentRound.push({ type: 'move', player: currentPlayerIndex, row, col });
-            turnStep = 0;
-            currentPlayerIndex = (currentPlayerIndex + 1) % 3;
-            updateTurnIndicators();
-            updateCurrentPlayerDisplay();
-            updateCurrentTaskDisplay();
-            if (currentPlayerIndex === 0) {
-                processRound();
-            } else {
-                setTimeout(aiTurn, 1000);
-            }
-        }
+    // Clear guesses function
+    function clearGuesses() {
+        players.forEach(player => {
+            player.guesses.forEach(guess => {
+                board[guess.row][guess.col].element.classList.remove(`outline-${player.color}`);
+            });
+            player.guesses = [];
+        });
     }
 
-    // Update turn indicators
-    function updateTurnIndicators() {
-        players.forEach((player, index) => {
-            const indicator = document.getElementById(`indicator-${player.name.toLowerCase()}`);
-            const outerCircle = indicator.querySelector('.outline-circle:nth-child(1)');
-            const innerCircle = indicator.querySelector('.outline-circle:nth-child(2)');
-            const solidCircle = indicator.querySelector('.solid-circle');
+    // AI make move function
+    function aiMakeMove(player) {
+        while (player.guesses.length < 2) {
+            const targetPlayer = players[(currentPlayerIndex + player.guesses.length + 1) % players.length];
+            const guess = getValidRandomMove(player, true);
+            player.guesses.push(guess);
+            board[guess.row][guess.col].element.classList.add(`outline-${player.color}`);
+        }
 
-            outerCircle.style.borderColor = 'transparent';
-            innerCircle.style.borderColor = 'transparent';
-            solidCircle.style.backgroundColor = 'transparent';
+        const move = getValidRandomMove(player);
+        capturePiece(player, move.row, move.col);
+        board[move.row][move.col].occupiedBy = player;
+        player.pieces.push(move);
+        board[move.row][move.col].element.className = `square ${player.color} transparent`;
+        finalizeTurn();
+    }
 
-            if (index === currentPlayerIndex) {
-                if (turnStep === 1) {
-                    outerCircle.style.borderColor = player.color;
-                } else if (turnStep === 2) {
-                    outerCircle.style.borderColor = player.color;
-                    innerCircle.style.borderColor = player.color;
-                } else if (turnStep === 0 && currentRound.length === 3) {
-                    outerCircle.style.borderColor = player.color;
-                    innerCircle.style.borderColor = player.color;
-                    solidCircle.style.backgroundColor = player.color;
+    // Get valid random move function
+    function getValidRandomMove(player, isGuess = false) {
+        let row, col;
+        do {
+            row = Math.floor(Math.random() * boardSize);
+            col = Math.floor(Math.random() * boardSize);
+        } while (!isValidMove(player, row, col, isGuess));
+        return { row, col };
+    }
+
+    // Delete one random square from the board
+    function deleteRandomSquare() {
+        let emptySquares = [];
+        board.forEach(row => {
+            row.forEach(square => {
+                if (!square.occupiedBy && square.occupiedBy !== 'deleted') {
+                    emptySquares.push(square);
                 }
-            }
+            });
         });
-    }
 
-    // AI turn
-    function aiTurn() {
-        if (turnStep < 2) {
-            const target = (currentPlayerIndex + turnStep + 1) % 3;
-            const row = Math.floor(Math.random() * boardSize);
-            const col = Math.floor(Math.random() * boardSize);
-            currentRound.push({ type: 'guess', player: currentPlayerIndex, row, col, target });
-            turnStep++;
-            updateTurnIndicators();
-            updateCurrentTaskDisplay();
-            setTimeout(aiTurn, 1000);
-        } else {
-            const row = Math.floor(Math.random() * boardSize);
-            const col = Math.floor(Math.random() * boardSize);
-            currentRound.push({ type: 'move', player: currentPlayerIndex, row, col });
-            turnStep = 0;
-            currentPlayerIndex = (currentPlayerIndex + 1) % 3;
-            updateTurnIndicators();
-            updateCurrentPlayerDisplay();
-            updateCurrentTaskDisplay();
-            if (currentPlayerIndex === 0) {
-                processRound();
-            } else {
-                setTimeout(aiTurn, 1000);
-            }
+        if (emptySquares.length > 0) {
+            const randomIndex = Math.floor(Math.random() * emptySquares.length);
+            const square = emptySquares[randomIndex];
+            square.element.classList.add('deleted');
+            square.occupiedBy = 'deleted';
         }
     }
 
-    // Process round
-    function processRound() {
-        const moves = currentRound.filter(action => action.type === 'move');
-        const guesses = currentRound.filter(action => action.type === 'guess');
-
-        const moveCounts = {};
-        moves.forEach(move => {
-            const key = `${move.row}-${move.col}`;
-            if (!moveCounts[key]) {
-                moveCounts[key] = 0;
-            }
-            moveCounts[key]++;
-        });
-
-        moves.forEach(move => {
-            const key = `${move.row}-${move.col}`;
-            if (moveCounts[key] === 1) {
-                board[move.row][move.col].element.classList.add(players[move.player].color);
-            }
-        });
-
-        const predictionResults = document.getElementById('breakdown-box');
-        predictionResults.innerHTML = '<p>Prediction Results</p>';
-        
-        guesses.forEach(guess => {
-            const move = moves.find(move => move.player === guess.target && move.row === guess.row && move.col === guess.col);
-            if (move) {
-                players[guess.player].score++;
-                predictionResults.innerHTML += `<p>| ${players[guess.player].name} ➡ ${players[guess.target].name} ✔️</p>`;
-            } else {
-                predictionResults.innerHTML += `<p>| ${players[guess.player].name} ➡ ${players[guess.target].name} ❌</p>`;
-            }
-            board[guess.row][guess.col].element.classList.add(`outline-${players[guess.player].color}`);
-        });
-
-        updateScoreDisplay();
-        clearBoardHighlights();
-        currentRound = [];
-        setTimeout(() => {
-            updateTurnIndicators();
-        }, 1000);
+    // Check if a guess is valid
+    function isValidGuess(player, row, col) {
+        return isValidMove(player, row, col, true);
     }
 
-    // Start the game
-    function startGame() {
-        updateCurrentPlayerDisplay();
-        updateCurrentTaskDisplay();
-        updateTurnIndicators();
-    }
-
-    startGame();
+    updateDisplay(); // Initial display update
 });
